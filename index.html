@@ -83,20 +83,20 @@
       let hour = now.getHours();
       let minute = now.getMinutes();
 
-      // 22:30より後は、22:30に固定
+      // 丸め：0〜29分は00、30〜59分は30
+      minute = minute < 30 ? 0 : 30;
+
+      // 時間を丸めた結果 22:30超えるなら22:30固定
       if (hour > 22 || (hour === 22 && minute > 30)) {
         hour = 22;
         minute = 30;
       }
 
-      // 18:00より前の場合は18:00にする（念のため）
+      // 18:00より前は18:00固定
       if (hour < 18) {
         hour = 18;
         minute = 0;
       }
-
-      // 30分単位に丸める
-      minute = minute < 30 ? 0 : 30;
 
       document.getElementById('end').value = `${pad(hour)}:${pad(minute)}`;
     }
@@ -114,8 +114,8 @@
       const [sh, sm] = start.split(":").map(Number);
       const [eh, em] = end.split(":").map(Number);
 
-      let startMins = sh * 60 + sm;
-      let endMins = eh * 60 + em;
+      const startMins = sh * 60 + sm;
+      const endMins = eh * 60 + em;
 
       if (endMins < startMins) {
         document.getElementById('result').innerText = '終了時間が開始より前だぞ。';
