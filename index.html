@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>30分単位計算</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      font-size: 20px;
+      padding: 20px;
+      background-color: #fdfdfd;
+    }
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      font-size: 22px;
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 24px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <h2>30分単位数と料金計算</h2>
+
+  <label>開始時間:<br> <input type="time" id="start"></label><br>
+  <label>終了時間:<br> 
+    <input type="time" id="end">
+    <button onclick="setNowTime()">今の時刻をセット</button>
+  </label><br>
+
+  <label>性別を選択:<br>
+    <select id="gender">
+      <option value="female">女性（500円/30分）</option>
+      <option value="male">男性（1000円/30分）</option>
+    </select>
+  </label><br>
+
+  <button onclick="calcUnits()">計算する</button>
+  <p id="result"></p>
+
+  <script>
+    function pad(n) {
+      return n.toString().padStart(2, '0');
+    }
+
+    function setNowTime() {
+      const now = new Date();
+      const hh = pad(now.getHours());
+      const mm = pad(now.getMinutes());
+      document.getElementById('end').value = `${hh}:${mm}`;
+    }
+
+    function calcUnits() {
+      const start = document.getElementById('start').value;
+      const end = document.getElementById('end').value;
+      const gender = document.getElementById('gender').value;
+
+      if (!start || !end) {
+        document.getElementById('result').innerText = '両方の時刻を入力せよ。';
+        return;
+      }
+
+      const [sh, sm] = start.split(":").map(Number);
+      const [eh, em] = end.split(":").map(Number);
+
+      let startMins = sh * 60 + sm;
+      let endMins = eh * 60 + em;
+
+      if (endMins < startMins) {
+        endMins += 24 * 60;
+      }
+
+      const diff = endMins - startMins;
+      const units = Math.floor(diff / 30);
+      const hours = Math.floor(diff / 60);
+      const minutes = diff % 60;
+
+      let rate = gender === 'female' ? 500 : 1000;
+      let total = units * rate;
+
+      document.getElementById('result').innerText =
+        `${hours}時間${minutes}分（${units}単位）です。\n料金: ${total}円`;
+    }
+  </script>
+</body>
+</html>
