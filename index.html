@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>チャージ計算</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      font-size: 20px;
+      padding: 20px;
+      background-color: #fdfdfd;
+    }
+    h2 {
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      font-size: 22px;
+      padding: 10px;
+      margin: 10px 0;
+      box-sizing: border-box;
+    }
+    input[type="time"] {
+      width: 70%;
+    }
+    #nowBtn {
+      font-size: 16px;
+      padding: 8px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    #calcBtn {
+      font-size: 26px;
+      padding: 14px;
+      width: 100%;
+      background-color: #444;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #calcBtn:hover {
+      background-color: #666;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 24px;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+  <h2>チャージ計算</h2>
+
+  <label>開始時間:<br> 
+    <input type="time" id="start" min="18:00" max="22:30" step="60">
+  </label><br>
+
+  <label>終了時間:<br> 
+    <input type="time" id="end" min="18:00" max="22:30" step="60">
+    <button id="nowBtn" onclick="setNowTime()">今の時刻</button>
+  </label><br>
+
+  <label>性別を選択:<br>
+    <select id="gender">
+      <option value="female">女性（500円/30分）</option>
+      <option value="male">男性（1000円/30分）</option>
+    </select>
+  </label><br>
+
+  <button id="calcBtn" onclick="calcUnits()">計算する</button>
+  <p id="result"></p>
+
+  <script>
+    function pad(n) {
+      return n.toString().padStart(2, '0');
+    }
+
+    function setNowTime() {
+      const now = new Date();
+      let hour = now.getHours();
+      let minute = now.getMinutes();
+
+      // 範囲制限
+      if (hour < 18) {
+        hour = 18;
+        minute = 0;
+      }
+      if (hour > 22 || (hour === 22 && minute > 30)) {
+        hour = 22;
+        minute = 30;
+      }
+
+      document.getElementById('end').value = `${pad(hour)}:${pad(minute)}`;
+    }
+
+    function calcUnits() {
+      const start = document.getElementById('start').value;
+      const end = document.getElementById('end').value;
+      const gender = document.getElementById('gender').value;
+
+      if (!start || !end) {
+        document.getElementById('result').innerText = '両方の時刻を入力せよ。';
+        return;
+      }
+
+      const [sh, sm] = start.split(":").map(Number);
+      const [eh, em] = end.split(":").map(Number);
+
+      const startMins = sh * 60 + sm;
+      const endMins = eh * 60 + em;
+
+      if (endMins < startMins) {
+        document.getElementById('result').innerText = '終了時間が開始より前だぞ。';
+        return;
+      }
+
+      const diff = endMins - startMins;
+      const units = Math.floor(diff / 30); // 切り捨て
+      const hours = Math.floor(diff / 60);
+      const minutes = diff % 60;
+
+      const rate = gender === 'female' ? 500 : 1000;
+      const total = units * rate;
+
+      document.getElementById('result').innerText =
+        `${hours}時間${minutes}分（${units}単位）です。\n料金: ${total}円`;
+    }
+  </script>
+</body>
+</html>
