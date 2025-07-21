@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>30分単位計算</title>
+</head>
+<body>
+  <h2>30分単位数 計算</h2>
+
+  <label>開始時間: <input type="time" id="start"></label><br>
+  <label>終了時間: <input type="time" id="end"></label><br><br>
+
+  <button onclick="calcUnits()">計算する</button>
+  <p id="result"></p>
+
+  <script>
+    function calcUnits() {
+      const start = document.getElementById('start').value;
+      const end = document.getElementById('end').value;
+
+      if (!start || !end) {
+        document.getElementById('result').innerText = '両方の時刻を入力せよ。';
+        return;
+      }
+
+      const [sh, sm] = start.split(":").map(Number);
+      const [eh, em] = end.split(":").map(Number);
+
+      let startMins = sh * 60 + sm;
+      let endMins = eh * 60 + em;
+
+      // 日またぎ対応（例：23:40〜1:10）
+      if (endMins < startMins) {
+        endMins += 24 * 60;
+      }
+
+      const diff = endMins - startMins;
+      const units = diff / 30;
+
+      document.getElementById('result').innerText = `${units} 単位だ。`;
+    }
+  </script>
+</body>
+</html>
