@@ -123,37 +123,38 @@
       document.getElementById('end').value = `${pad(hour)}:${pad(minute)}`;
     }
 
-    function calcUnits() {
-      const start = document.getElementById('start').value;
-      const end = document.getElementById('end').value;
-      const gender = document.getElementById('gender').value;
+function calcUnits() {
+  const start = document.getElementById('start').value;
+  const end = document.getElementById('end').value;
+  const gender = document.getElementById('gender').value;
 
-      if (!start || !end) {
-        document.getElementById('result').innerText = '両方の時刻を入力せよ。';
-        return;
-      }
+  if (!start || !end) {
+    document.getElementById('result').innerText = '両方の時刻を入力せよ。';
+    return;
+  }
 
-      const [sh, sm] = start.split(':').map(Number);
-      const [eh, em] = end.split(':').map(Number);
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
 
-      const startMins = sh * 60 + sm;
-      const endMins = eh * 60 + em;
+  const startMins = sh * 60 + sm;
+  const endMins = eh * 60 + em;
 
-      if (endMins < startMins) {
-        document.getElementById('result').innerText = '終了時間が開始より前だぞ。';
-        return;
-      }
+  if (endMins < startMins) {
+    document.getElementById('result').innerText = '終了時間が開始時間より前です。';
+    return;
+  }
 
-      const diff = endMins - startMins;
-      const units = Math.floor(diff / 30);
-      const hours = Math.floor(diff / 60);
-      const minutes = diff % 60;
+  const diff = endMins - startMins;
+  const hours = Math.floor(diff / 60);
+  const minutes = diff % 60;
 
-      const rate = gender === 'female' ? 500 : 1000;
-      const total = units * rate;
+  const units = Math.ceil(diff / 30); // ← ここで切り上げ
+  const rate = gender === 'female' ? 500 : 1000;
+  const total = units * rate;
 
-      document.getElementById('result').innerText =
-        `${hours}時間${minutes}分（${units}単位）です。\n料金: ${total}円`;
+  document.getElementById('result').innerText =
+    `${hours}時間${minutes}分（${units}単位）です。\n料金: ${total}円`;
+}
     }
   </script>
 </body>
